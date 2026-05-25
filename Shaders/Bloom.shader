@@ -35,8 +35,10 @@ Shader "Unlit/Bloom"
 
             float4 FragPrefilter(Varyings input) : SV_Target
             {
+                // TDR FIX: 零覆盖快速路径 — 跳过字符区域外的所有计算
+                float v = SAMPLE_TEXTURE2D(_CoverageTex, sampler_CoverageTex, input.texcoord).r;
+                if (v < 0.001) return float4(0, 0, 0, 0);
                 float3 c = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, input.texcoord).rgb;
-                float  v = SAMPLE_TEXTURE2D(_CoverageTex, sampler_CoverageTex, input.texcoord).r;
                 float L = dot(c, float3(0.2126, 0.7152, 0.0722));
                 float k = _BloomThreshold * _BloomSoftKnee + 1e-5;
                 float3 bloom = c * Knee(L, _BloomThreshold, k);

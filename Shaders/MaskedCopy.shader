@@ -21,8 +21,10 @@ Shader "Hidden/Character/MaskedCopy"
 
             float4 Frag(Varyings input) : SV_Target
             {
+                float coverage = SAMPLE_TEXTURE2D(_CoverageTex, sampler_CoverageTex, input.texcoord).r;
+                // TDR FIX: 零覆盖快速路径 — 跳过颜色采样和乘法
+                if (coverage < 0.001) return float4(0, 0, 0, 1);
                 float3 camColor = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, input.texcoord).rgb;
-                float  coverage = SAMPLE_TEXTURE2D(_CoverageTex, sampler_CoverageTex, input.texcoord).r;
                 return float4(camColor * coverage, 1.0);
             }
             ENDHLSL

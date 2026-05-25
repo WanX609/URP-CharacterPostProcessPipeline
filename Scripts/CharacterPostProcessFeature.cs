@@ -38,6 +38,15 @@ public class CharacterPostProcessFeature : ScriptableRendererFeature
         [Range(0.1f,10f)]  public float exposure = 1.0f;
         [Range(0f,1f)]     public float hueProtectionStrength  = 0.4f;
         [Range(0.01f,0.2f)]public float hueProtectionThreshold = 0.05f;
+
+        // ── TDR FIX: 滑块安全模式配置 ──
+        [Header("TDR Safety")]
+        [Tooltip("启用滑块拖动安全模式——拖动 bloom 迭代数时自动降级以避免 GPU 超时")]
+        public bool enableSliderSafetyMode = true;
+        [Tooltip("安全模式下允许的最大 Kawase 迭代数")]
+        [Range(1, 3)] public int safeModeMaxIterations = 2;
+        [Tooltip("安全模式持续时间（秒）——滑块停止后此时间内使用安全迭代数")]
+        [Range(0.1f, 2f)] public float safetyModeDuration = 0.5f;
     }
 
     public Settings settings = new();
@@ -65,7 +74,6 @@ public class CharacterPostProcessFeature : ScriptableRendererFeature
         if (cam != Camera.main) return;
         if (settings.characterLayer.value == 0) return;
 
-        // 每个主相机帧更新第二相机设置
         var mainCam = Camera.main;
         int w = renderingData.cameraData.cameraTargetDescriptor.width;
         int h = renderingData.cameraData.cameraTargetDescriptor.height;
