@@ -313,6 +313,3 @@ half4 Frag(Varyings input) : SV_Target
 
 4. **TDR 风险**：对话早期报告了 Bloom 滑块调整时偶发的 GPU 设备重置（`Failed to present D3D11 swapchain due to device reset/removed`）。虽然后续通过 `useDynamicScale=false` 和场景预复制策略缓解，但未进行长期稳定性验证。**不确定是否已彻底解决**——缺乏多 GPU/多分辨率/长时间运行的测试数据。如果此问题复现，建议：增大 Windows TDR 超时（`TdrDelay` 注册表项）或降低 `bloomKawaseIterations` 到 1-2。
 
----
-
-*本文基于一次跨越 80+ 轮迭代的调试会话，涵盖了从架构设计到 GPU 精度 Bug 的完整排查链。*
